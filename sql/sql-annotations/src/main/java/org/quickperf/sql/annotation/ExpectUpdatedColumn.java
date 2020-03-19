@@ -21,4 +21,5 @@ import java.lang.annotation.Target;
 public @interface ExpectUpdatedColumn {
 
 	int value() default 0;
+
 }

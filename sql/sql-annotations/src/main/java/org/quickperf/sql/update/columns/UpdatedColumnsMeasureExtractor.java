@@ -27,4 +27,5 @@ public class UpdatedColumnsMeasureExtractor implements ExtractablePerformanceMea
         String comment = sqlExecutions.toString();
         return new Count(updateCount, comment);
     }
+
 }

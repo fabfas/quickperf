@@ -31,8 +31,8 @@ public class SqlStatementPerfIssueBuilder {
     
     public PerfIssue buildNotEqualNumberOfColumns(Count measuredCount, Count expectedCount, String requestType) {
     	String assertionMessage = "Expected number of " + requestType + " columns "
-    			+ "<" + expectedCount.getValue() + ">"
-    			+ " but is " + "<" + measuredCount.getValue() + ">" + ".";
+    			               + "<" + expectedCount.getValue() + ">"
+    			               + " but is " + "<" + measuredCount.getValue() + ">" + ".";
     	return new PerfIssue(assertionMessage);
     }
 

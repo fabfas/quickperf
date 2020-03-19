@@ -33,10 +33,11 @@ public class UpdatedColumnsPerfIssueVerifier implements VerifiablePerformanceIss
 
         if (!measuredCount.isEqualTo(expectedCount)) {
             return aSqlPerfIssue().buildNotEqualNumberOfColumns(measuredCount
-                    , expectedCount
-                    , UPDATE);
+                                                              , expectedCount
+                                                              , UPDATE);
         }
         
         return PerfIssue.NONE;
     }
+
 }
