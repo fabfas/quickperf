@@ -16,8 +16,6 @@ import org.quickperf.issue.VerifiablePerformanceIssue;
 import org.quickperf.sql.annotation.ExpectUpdatedColumn;
 import org.quickperf.unit.Count;
 
-import static org.quickperf.sql.SqlStatementPerfIssueBuilder.aSqlPerfIssue;
-
 public class UpdatedColumnsPerfIssueVerifier implements VerifiablePerformanceIssue<ExpectUpdatedColumn, Count> {
 
     private static final String UPDATE = "UPDATE";
@@ -32,12 +30,18 @@ public class UpdatedColumnsPerfIssueVerifier implements VerifiablePerformanceIss
         Count expectedCount = new Count(annotation.value());
 
         if (!measuredCount.isEqualTo(expectedCount)) {
-            return aSqlPerfIssue().buildNotEqualNumberOfColumns(measuredCount
-                                                              , expectedCount
-                                                              , UPDATE);
+            return buildPerfIssue(measuredCount, expectedCount, UPDATE);
         }
         
         return PerfIssue.NONE;
+    }
+
+    private PerfIssue buildPerfIssue(Count measuredCount, Count expectedCount, String requestType) {
+        String assertionMessage =
+                  "Expected number of " + requestType + " columns "
+                + "<" + expectedCount.getValue() + ">"
+                + " but is " + "<" + measuredCount.getValue() + ">" + ".";
+        return new PerfIssue(assertionMessage);
     }
 
 }
