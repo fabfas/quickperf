@@ -30,15 +30,15 @@ public class UpdatedColumnsPerfIssueVerifier implements VerifiablePerformanceIss
         Count expectedCount = new Count(annotation.value());
 
         if (!measuredCount.isEqualTo(expectedCount)) {
-            return buildPerfIssue(measuredCount, expectedCount, UPDATE);
+            return buildPerfIssue(measuredCount, expectedCount);
         }
         
         return PerfIssue.NONE;
     }
 
-    private PerfIssue buildPerfIssue(Count measuredCount, Count expectedCount, String requestType) {
+    private PerfIssue buildPerfIssue(Count measuredCount, Count expectedCount) {
         String assertionMessage =
-                  "Expected number of " + requestType + " columns "
+                  "Expected number of updated columns "
                 + "<" + expectedCount.getValue() + ">"
                 + " but is " + "<" + measuredCount.getValue() + ">" + ".";
         return new PerfIssue(assertionMessage);

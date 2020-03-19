@@ -84,7 +84,7 @@ public class ExpectUpdatedColumnTest {
         assertThat(printableResult.failureCount()).isOne();
 
         assertThat(printableResult.toString()).contains(
-                "Expected number of UPDATE columns <1> but is <2>.");
+                "Expected number of updated columns <1> but is <2>.");
 
         assertThat(printableResult.toString().toLowerCase())
                       .contains("update")
