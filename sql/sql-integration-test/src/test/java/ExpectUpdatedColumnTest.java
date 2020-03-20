@@ -95,4 +95,55 @@ public class ExpectUpdatedColumnTest {
 
     }
 
+    @RunWith(QuickPerfJUnitRunner.class)
+    @ExpectUpdatedColumn(2)
+    public static class AClassAnnotatedWithExpectUpdatedColumnFailingBecauseOneOfTheTwoUpdates extends SqlTestBase {
+
+        @Test
+        public void execute_two_update_statements() {
+
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+
+            // Two updated columns
+            Query nativeQuery1 = em.createNativeQuery("UPDATE book SET isbn = :isbn, title = :title WHERE id = :id")
+                                 .setParameter("isbn", 12)
+                                 .setParameter("title", "Manon")
+                                 .setParameter("id", 40);
+            nativeQuery1.executeUpdate();
+
+            // One updated column
+            Query nativeQuery2 = em.createNativeQuery("UPDATE book SET isbn = :isbn WHERE id = :id")
+                                .setParameter("isbn", 12)
+                                .setParameter("id", 41);
+            nativeQuery2.executeUpdate();
+
+            em.getTransaction().commit();
+
+        }
+
+    }
+
+    @Test public void
+    should_fail_if_one_of_the_statements_updates_a_number_of_columns_different_from_this_expected() {
+
+        // GIVEN
+        Class<?> testClass = AClassAnnotatedWithExpectUpdatedColumnFailingBecauseOneOfTheTwoUpdates.class;
+
+        // WHEN
+        PrintableResult printableResult = PrintableResult.testResult(testClass);
+
+        // THEN
+        assertThat(printableResult.failureCount()).isOne();
+
+        assertThat(printableResult.toString()).contains(
+                "Expected number of updated columns <2> but is between <1> and <2>.");
+
+        assertThat(printableResult.toString())
+                .containsIgnoringCase("id = ?\"], Params:[(12,Manon,40)]")
+                .contains("id = ?\"], Params:[(12,41)]");
+
+    }
+
 }
+

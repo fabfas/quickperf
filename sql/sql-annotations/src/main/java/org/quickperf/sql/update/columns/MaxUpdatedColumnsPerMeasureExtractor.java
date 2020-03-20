@@ -23,8 +23,9 @@ public class MaxUpdatedColumnsPerMeasureExtractor implements ExtractablePerforma
 
     @Override
     public Count extractPerfMeasureFrom(SqlExecutions perfRecord) {
-        long numberOfUpdatedColumns = perfRecord.getMaxNumberOfUpdatedColumn();
-        return new Count(numberOfUpdatedColumns);
+        NumberOfUpdatedColumnsStatistics updatedColumnsStatistics = perfRecord.getUpdatedColumnsStatistics();
+        long maxUpdatedColumns = updatedColumnsStatistics.getMax();
+        return new Count(maxUpdatedColumns);
     }
 
 }

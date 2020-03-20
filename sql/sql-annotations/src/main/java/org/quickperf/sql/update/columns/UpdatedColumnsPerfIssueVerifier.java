@@ -14,34 +14,47 @@ package org.quickperf.sql.update.columns;
 import org.quickperf.issue.PerfIssue;
 import org.quickperf.issue.VerifiablePerformanceIssue;
 import org.quickperf.sql.annotation.ExpectUpdatedColumn;
-import org.quickperf.unit.Count;
 
-public class UpdatedColumnsPerfIssueVerifier implements VerifiablePerformanceIssue<ExpectUpdatedColumn, Count> {
-
-    private static final String UPDATE = "UPDATE";
+public class UpdatedColumnsPerfIssueVerifier implements VerifiablePerformanceIssue<ExpectUpdatedColumn, NumberOfUpdatedColumnsStatisticsMeasure> {
 
     public static final UpdatedColumnsPerfIssueVerifier INSTANCE = new UpdatedColumnsPerfIssueVerifier();
 
     private UpdatedColumnsPerfIssueVerifier() {}
 
     @Override
-    public PerfIssue verifyPerfIssue(ExpectUpdatedColumn annotation, Count measuredCount) {
+    public PerfIssue verifyPerfIssue(ExpectUpdatedColumn annotation, NumberOfUpdatedColumnsStatisticsMeasure measure) {
 
-        Count expectedCount = new Count(annotation.value());
+        NumberOfUpdatedColumnsStatistics updatedColumnsStatistics = measure.getValue();
 
-        if (!measuredCount.isEqualTo(expectedCount)) {
-            return buildPerfIssue(measuredCount, expectedCount);
+        int expectedUpdatesColumns = annotation.value();
+
+        long maxColumnCount = updatedColumnsStatistics.getMax();
+        long minColumnCount = updatedColumnsStatistics.getMin();
+
+        if(  expectedUpdatesColumns != minColumnCount || expectedUpdatesColumns != maxColumnCount
+          ) {
+            return buildPerfIssue(expectedUpdatesColumns, maxColumnCount, minColumnCount);
         }
-        
+
         return PerfIssue.NONE;
+
     }
 
-    private PerfIssue buildPerfIssue(Count measuredCount, Count expectedCount) {
-        String assertionMessage =
-                  "Expected number of updated columns "
-                + "<" + expectedCount.getValue() + ">"
-                + " but is " + "<" + measuredCount.getValue() + ">" + ".";
+    private PerfIssue buildPerfIssue(int expectedUpdatesColumns, long maxColumnCount, long minColumnCount) {
+
+        String assertionMessage = "Expected number of updated columns "
+                                + "<" + expectedUpdatesColumns + ">";
+
+        boolean oneColumnUpdated = minColumnCount == maxColumnCount;
+        if(oneColumnUpdated) {
+            assertionMessage += " but is " + "<" + minColumnCount + ">" + ".";
+        } else {
+            assertionMessage += " but is between " + "<" + minColumnCount + ">"
+                              + " and " + "<" + maxColumnCount +  ">.";
+        }
+
         return new PerfIssue(assertionMessage);
+
     }
 
 }
